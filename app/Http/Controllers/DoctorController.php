@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Doctor;
 use App\Models\Employee;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -14,22 +15,9 @@ class DoctorController extends Controller
     public function index()
     {
         $doctors = User::with('userDetails')->where('role_id',1)->get(); 
-        return view('admin.doctors.index', compact('doctors' ));
+        $roles = Role::where('status', 1)->get();
+        return view('admin.doctors.index', compact('doctors','roles' ));
     }
-    // Store New Doctor using AJAX
-    public function store(Request $request)
-    {
-        $request->validate([
-            'employee_id' => 'required|exists:employees,id',
-        ]);
-
-        $doctor = Doctor::create([
-            'employee_id' => $request->employee_id,
-        ]);
-
-        return response()->json(['success' => true, 'message' => 'Doctor added successfully.', 'doctor' => $doctor]);
-    }
-
     // Get Doctor Details
     public function show($id)
     {
@@ -40,24 +28,16 @@ class DoctorController extends Controller
         return response()->json(['success' => true, 'data' => $doctor]);
     }
 
-    // Update Doctor using AJAX
-    public function update(Request $request, Doctor $doctor)
+    public function edit($id)
     {
-        $request->validate([
-            'employee_id' => 'required|exists:employees,id',
-        ]);
+        $doctor = User::where('id', $id)->where('role_id', 1)->first();
+        
+        if (!$doctor) {
+            return redirect()->route('admin.doctors.index')->with('error', 'Doctor not found.');
+        }
 
-        $doctor->update([
-            'employee_id' => $request->employee_id,
-        ]);
-
-        return response()->json(['success' => true, 'message' => 'Doctor updated successfully.', 'doctor' => $doctor]);
+        // Redirect to UserController edit function
+        return redirect()->route('admin.users.update', ['id' => $doctor->id]);
     }
 
-    // Delete Doctor using AJAX
-    public function destroy(Doctor $doctor)
-    {
-        $doctor->delete();
-        return response()->json(['success' => true, 'message' => 'Doctor deleted successfully.']);
-    }
 }

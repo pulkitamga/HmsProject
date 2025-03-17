@@ -31,8 +31,8 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     })->name('dashboard');
     Route::controller(UserController::class)->group(function () {
         Route::get('/users', 'index')->name('users.index');
-        Route::post('/users', 'store')->name('users.store')->middleware(CheckPermissionMiddleware::class . ':add');
-        Route::put('/users/{id}', 'update')->name('users.update')->middleware(CheckPermissionMiddleware::class . ':view_update');
+        Route::post('/users', 'store')->name('users.store')->middleware(CheckPermissionMiddleware::class . ':add_User');
+        Route::put('/users/{id}', 'update')->name('users.update')->middleware(CheckPermissionMiddleware::class . ':edit_User');
         Route::delete('/users/{id}', 'destroy')->name('users.destroy');
     });
 

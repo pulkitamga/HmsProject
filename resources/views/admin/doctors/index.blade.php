@@ -29,13 +29,11 @@
                                         $doctor->userDetails &&
                                             $doctor->userDetails->specialization &&
                                             is_array(json_decode($doctor->userDetails->specialization)))
-                                    
                                         @foreach (json_decode($doctor->userDetails->specialization) as $specialization)
                                             <li>{{ $specialization }}</li>
                                         @endforeach
                                     @else
                                         <li>No Specializations available</li>
-                                       
                                     @endif
 
                                 </td>
@@ -43,6 +41,14 @@
                                     <button class="btn btn-info btn-sm viewDoctor" data-id="{{ $doctor->id }}">
                                         <i class="fa fa-eye"></i>
                                     </button>
+                                    
+                                    <button class="btn btn-primary btn-sm rounded-pill edit-user"
+                                   data-id="{{ $doctor->id }}" data-name="{{ $doctor->name }}"
+                                   data-email="{{ $doctor->email }}" data-role="{{ $doctor->role_id }}"
+                                    data-bs-toggle="modal" data-bs-target="#editUserModal"><i
+                                        class="fa fa-edit"></i></button>
+
+
                                 </td>
                             </tr>
                         @endforeach
@@ -67,6 +73,8 @@
                     </div>
                 </div>
             </div>
+
+            @include('admin.layouts.modal.edit_modal')
 
         </div>
     </div>

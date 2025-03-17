@@ -88,28 +88,17 @@ class UserController extends Controller
             1 => Doctor::class,   // Doctor role maps to Doctor model
             2 => Nurse::class,     // Nurse role maps to Nurse model
             3 => Accountant::class // Accountant role maps to Accountant model
-            // Add more mappings as needed for other roles
+           
         ];
 
         // Check if the role is valid and store role-specific details in the corresponding table
         if (array_key_exists($request->user_role, $roleMapping)) {
             $roleModel = $roleMapping[$request->user_role];
             $roleModel::create([
-                strtolower(class_basename($roleModel)) . '_id' => $userId, // dynamic field based on model name (doctor_id, nurse_id, etc.)
-                // Add role-specific data here if needed
+                strtolower(class_basename($roleModel)) . '_id' => $userId, 
+    
             ]);
         }
-    }
-
-
-    public function show(User $user)
-    {
-        return view('admin.users.show', compact('user'));
-    }
-
-    public function edit(User $user)
-    {
-        return view('admin.users.edit', compact('user'));
     }
 
     public function update(Request $request, $id)
