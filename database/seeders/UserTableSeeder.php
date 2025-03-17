@@ -26,8 +26,6 @@ class UserTableSeeder extends Seeder
                 'email' => 'admin@example.com',
                 'password' => Hash::make('jinh24uk'),
                 'role_id' => $adminRole->id, // Ensure it's assigned correctly
-                'gender' => 'male',
-                'dob' => '1990-01-01',
             ]);
         }
     }
