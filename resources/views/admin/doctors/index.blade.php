@@ -14,6 +14,7 @@
                             <th>ID</th>
                             <th>Employee Name</th>
                             <th>Email</th>
+                            <th>Specialization</th>
                             <th>Actions</th>
                         </tr>
                     </thead>

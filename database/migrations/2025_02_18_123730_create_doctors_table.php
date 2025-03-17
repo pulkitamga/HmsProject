@@ -15,7 +15,7 @@ class CreateDoctorsTable extends Migration
     {
         Schema::create('doctors', function (Blueprint $table) {
             $table->id(); // Auto Incrementing ID
-            $table->foreignId('employee_id')->constrained('employees'); // Foreign key for employees table
+            $table->foreignId('doctor_id')->constrained('users')->onDelete('cascade'); // Foreign key for employees table
             $table->timestamps(); // Created_at, Updated_at
             $table->softDeletes(); // Soft Deletes column
         });

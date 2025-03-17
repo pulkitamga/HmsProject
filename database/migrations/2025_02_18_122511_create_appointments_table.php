@@ -15,7 +15,8 @@ class CreateAppointmentsTable extends Migration
     {
         Schema::create('appointments', function (Blueprint $table) {
             $table->id(); // Auto Incrementing ID
-            $table->foreignId('patient_id')->constrained('patients'); // Foreign key for patients table
+            $table->string('patine_id');
+            $table->foreignId('patient_id')->reference('patinet_id')->on('patinets')->constrained('patients'); // Foreign key for patients table
             $table->foreignId('doctor_id')->constrained('doctors'); // Foreign key for doctors table
             $table->timestamp('appointment_date'); // Timestamp for appointment date
             $table->enum('status', ['scheduled', 'completed', 'cancelled'])->default('scheduled'); // Status column

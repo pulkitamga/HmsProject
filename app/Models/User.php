@@ -35,6 +35,13 @@ class User extends Authenticatable
     {
         return $this->hasOne(UserDetail::class);
     }
+
+    // User.php (Model)
+public function doctor()
+{
+    return $this->hasOne(Doctor::class, 'doctor_id', 'id');
+}
+
     public function role()
     {
         return $this->belongsTo(Role::class, "role_id");

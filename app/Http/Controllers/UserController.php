@@ -1,11 +1,13 @@
 <?php
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Models\Role;
 use App\Models\User;
+use App\Models\Doctor;
 use App\Models\UserDetail;
-use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -31,43 +33,74 @@ class UserController extends Controller
                 'errors' => $validator->errors()
             ], 422);
         }
-        $user=User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role_id' => $request->user_role,
-        ]);
-
-        $this->storeUserDetails($user->id, $request);
-
-        return response()->json(['success' => true, 'message' => 'User added successfully.']);
-    }
+        DB::beginTransaction(); // Start Transaction
+        try {
+            // Create user
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'role_id' => $request->user_role,
+            ]);
     
-    private function storeUserDetails($userId,Request $request)
-    {
-        $imagePath=null;
-        if($request->hasFile('image'))
-        {
-            $imagePath=$request->file('image')->store('profile_images','public');
+            // Store additional user details
+            $this->storeUserDetails($user->id, $request);
+            $this->storeRoleSpecificDetails($user->id, $request);
+    
+            DB::commit(); // Commit the transaction if everything is successful
+    
+            return response()->json(['success' => true, 'message' => 'User added successfully.']);
+        
+        } catch (\Exception $e) {
+            DB::rollback(); // Rollback transaction on error
+            return response()->json(['success' => false, 'message' => 'Error occurred: ' . $e->getMessage()], 500);
         }
-          UserDetail::create([
-             'user_id'=>$userId,
-             'specialization' => json_encode($request->specialization),
-             'education' => json_encode($request->education),
-             'image' => $imagePath, 
-             'phone' => $request->phone,
-             'experience' => $request->experience,
-             'joining_date' => $request->joining_date,
-             'address' => $request->address,
-             'bio' => $request->bio,
-             'status' => 'active', // Default status
-             'gender' => $request->gender,
-             'dob' => $request->dob,
-             'blood_group' => $request->blood_group,
-          ]);
     }
 
-    
+    private function storeUserDetails($userId, Request $request)
+    {
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('profile_images', 'public');
+        }
+        UserDetail::create([
+            'user_id' => $userId,
+            'specialization' => json_encode($request->specialization),
+            'education' => json_encode($request->education),
+            'image' => $imagePath,
+            'phone' => $request->phone,
+            'experience' => $request->experience,
+            'joining_date' => $request->joining_date,
+            'address' => $request->address,
+            'bio' => $request->bio,
+            'status' => 'active', // Default status
+            'gender' => $request->gender,
+            'dob' => $request->dob,
+            'blood_group' => $request->blood_group,
+        ]);
+    }
+
+    // Function to store role-specific details dynamically
+    private function storeRoleSpecificDetails($userId, Request $request)
+    {
+        // Mapping roles to the corresponding table model
+        $roleMapping = [
+            1 => Doctor::class,   // Doctor role maps to Doctor model
+            2 => Nurse::class,     // Nurse role maps to Nurse model
+            3 => Accountant::class // Accountant role maps to Accountant model
+            // Add more mappings as needed for other roles
+        ];
+
+        // Check if the role is valid and store role-specific details in the corresponding table
+        if (array_key_exists($request->user_role, $roleMapping)) {
+            $roleModel = $roleMapping[$request->user_role];
+            $roleModel::create([
+                strtolower(class_basename($roleModel)) . '_id' => $userId, // dynamic field based on model name (doctor_id, nurse_id, etc.)
+                // Add role-specific data here if needed
+            ]);
+        }
+    }
+
 
     public function show(User $user)
     {

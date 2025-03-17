@@ -10,11 +10,19 @@ class Doctor extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['employee_id'];
+    protected $fillable = ['doctor_id'];
 
-    // Relationship with Employee
-    public function employee()
+    // Relationship with User
+
+    public function user()
     {
-        return $this->belongsTo(Employee::class);
+        return $this->belongsTo(User::class, 'doctor_id', 'id');
     }
+
+    public function userDetails()
+    {
+        return $this->hasOne(UserDetail::class, 'user_id', 'doctor_id');
+    }
+
+
 }
