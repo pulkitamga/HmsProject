@@ -13,7 +13,7 @@ class RoleTableSeeder extends Seeder
     public function run(): void
     {
         Role::firstOrCreate([
-           'name'=>'Admin',
+           'name'=>'Super Admin',
            'status'=> 1
            ]
         );

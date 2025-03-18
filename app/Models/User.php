@@ -53,7 +53,7 @@ public function doctor()
         if ($this->role && $this->role->permissions->isNotEmpty()) {
             return $this->role->permissions->contains('name', $permissionName);
         }
-        return true; // Show button if no permissions are assigned
+        return false; // Show button if no permissions are assigned
     }
 
 

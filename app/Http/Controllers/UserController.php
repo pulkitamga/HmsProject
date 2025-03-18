@@ -85,10 +85,9 @@ class UserController extends Controller
     {
         // Mapping roles to the corresponding table model
         $roleMapping = [
-            1 => Doctor::class,   // Doctor role maps to Doctor model
-            2 => Nurse::class,     // Nurse role maps to Nurse model
-            3 => Accountant::class // Accountant role maps to Accountant model
-           
+            2 => Doctor::class,   // Doctor role maps to Doctor model
+            3 => Nurse::class,     // Nurse role maps to Nurse model
+            
         ];
 
         // Check if the role is valid and store role-specific details in the corresponding table

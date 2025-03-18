@@ -16,8 +16,8 @@
                 {{--             
                 <pre>{{ dd(auth()->user()->role->permissions) }}</pre> --}}
                 {{-- <pre>{{ dd(auth()->user()->role, auth()->user()->role->permissions) }}</pre> --}}
-
-                @if (auth()->user()->role->permissions->isEmpty() || auth()->user()->hasPermission('add'))
+                
+                @if (!auth()->user()->role->permissions->isEmpty() && auth()->user()->hasPermission('add_User'))
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#userModal">
                         <i class="fa fa-plus-circle me-2"></i> Add User
                     </button>
@@ -45,11 +45,13 @@
                                 <td>{{ $user->role->name ?? 'No Role Assigned' }}</td>
                                 <td>+917582060792</td>
                                 <td>
+                                    @if (!auth()->user()->role->permissions->isEmpty() && auth()->user()->hasPermission('edit_User'))
                                     <button class="btn btn-primary btn-sm rounded-pill edit-user"
                                         data-id="{{ $user->id }}" data-name="{{ $user->name }}"
                                         data-email="{{ $user->email }}" data-role="{{ $user->role_id }}"
                                         data-bs-toggle="modal" data-bs-target="#editUserModal"><i
                                             class="fa fa-edit"></i></button>
+                                    @endif
                                     <button class="btn btn-danger btn-sm delete-user" data-id={{ $user->id }}>
                                         <i class="fa fa-trash"></i>
                                     </button>

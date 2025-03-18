@@ -14,7 +14,7 @@ class DoctorController extends Controller
     // List All Doctors
     public function index()
     {
-        $doctors = User::with('userDetails')->where('role_id',1)->get(); 
+        $doctors = User::with('userDetails')->where('role_id',2)->get(); 
         $roles = Role::where('status', 1)->get();
         return view('admin.doctors.index', compact('doctors','roles' ));
     }
