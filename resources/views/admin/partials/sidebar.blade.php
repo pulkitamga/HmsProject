@@ -41,27 +41,28 @@
                       <div class="text-truncate" data-i18n="Account">User</div>
                     </a>
                   </li>
-                  <li class="menu-item">
-                    <a href="{{ route('permissions.create') }}" class="menu-link">
-                      <div class="text-trucate" data-i18n="Account">Assign Permission</div>
-                    </a>
-                  </li>
-                    <li class="menu-item">
-                    <a href="{{ route('role.view.assign-permissions') }}" class="menu-link">
-                      <div class="text-trucate" data-i18n="Account">Role Assign Permission</div>
-                    </a>
-                  </li>
-              
-                  <li class="menu-item">
-                    <a href="{{ route('work-leaves.index') }}" class="menu-link">
-                      <div class="text-truncate" data-i18n="Notifications">Work Leaves</div>
-                    </a>
-                  </li>
-                  <li class="menu-item">
-                    <a href="{{ route('users.role') }}" class="menu-link">
-                      <div class="text-truncate" data-i18n="Connections">Role</div>
-                    </a>
-                  </li>
+                  @if(auth()->check() && in_array(auth()->user()->role_id, [1, 2]))
+            <li class="menu-item">
+                <a href="{{ route('permissions.create') }}" class="menu-link">
+                    <div class="text-truncate" data-i18n="Account">Assign Permission</div>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{{ route('role.view.assign-permissions') }}" class="menu-link">
+                    <div class="text-truncate" data-i18n="Account">Role Assign Permission</div>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{{ route('work-leaves.index') }}" class="menu-link">
+                    <div class="text-truncate" data-i18n="Notifications">Work Leaves</div>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{{ route('users.role') }}" class="menu-link">
+                    <div class="text-truncate" data-i18n="Connections">Role</div>
+                </a>
+            </li>
+        @endif
                 </ul>
               </li>
               <li class="menu-item">

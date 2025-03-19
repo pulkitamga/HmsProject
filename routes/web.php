@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BillController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\UserController;
+use App\Http\Middleware\AcessMiddleware;
 use App\Http\Controllers\NurseController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\PatientController;
@@ -105,7 +106,7 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     });
 
     Route::controller(PermissionController::class)->group(function(){
-        Route::get('/permissions/create', 'create')->name('permissions.create');
+        Route::get('/permissions/create', 'create')->name('permissions.create')->middleware(AcessMiddleware::class);
         Route::post('/permissions/store', 'store')->name('permissions.store');
     });
    
