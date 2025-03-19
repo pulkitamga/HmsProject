@@ -36,11 +36,15 @@ class User extends Authenticatable
         return $this->hasOne(UserDetail::class);
     }
 
-    // User.php (Model)
-public function doctor()
-{
-    return $this->hasOne(Doctor::class, 'doctor_id', 'id');
-}
+    public function doctor()
+    {
+        return $this->hasOne(Doctor::class, 'doctor_id', 'id');
+    }
+    
+    public function nurse()
+    {
+        return $this->hasOne(Nurse::class,'nurse_id','id');
+    }
 
     public function role()
     {

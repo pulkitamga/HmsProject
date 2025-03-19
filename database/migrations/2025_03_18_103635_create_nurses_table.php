@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('permissions', function (Blueprint $table) {
-            $table->string('model_name')->after('id');
+        Schema::create('nurses', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('nurse_id')->constrained('users')->onDelete('cascade');
+            $table->timestamps();
+            $table->softDeletes(); // Soft deletes column
         });
     }
 
@@ -21,8 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('permissions', function (Blueprint $table) {
-            $table->dropColumn('model_name');
-        });
+        Schema::dropIfExists('nurses');
     }
 };

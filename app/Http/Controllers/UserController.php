@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Exception;
 use App\Models\Role;
 use App\Models\User;
+use App\Models\Nurse;
 use App\Models\Doctor;
 use App\Models\UserDetail;
 use Illuminate\Http\Request;
@@ -85,8 +86,8 @@ class UserController extends Controller
     {
         // Mapping roles to the corresponding table model
         $roleMapping = [
-            2 => Doctor::class,   // Doctor role maps to Doctor model
-            3 => Nurse::class,     // Nurse role maps to Nurse model
+            4 => Doctor::class,   // Doctor role maps to Doctor model
+            5 => Nurse::class,     // Nurse role maps to Nurse model
             
         ];
 

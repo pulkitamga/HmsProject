@@ -123,6 +123,11 @@
                       <div class="text-truncate" data-i18n="Under Maintenance">Docters</div>
                     </a>
                   </li>
+                  <li class="menu-item">
+                    <a href="{{ route('nurses.index') }}" class="menu-link">
+                      <div class="text-truncate" data-i18n="Under Maintenance"nursess>nursess</div>
+                    </a>
+                  </li>
                 </ul>
               </li>
               

@@ -16,6 +16,12 @@ class CheckPermissionMiddleware
      */
     public function handle(Request $request, Closure $next,$permission): Response
     {
+        $user=Auth::user();
+
+        if($user && $user->role_id==1)
+        {
+            return $next($request);
+        }
         if(!Auth::check() || !Auth::user()->hasPermission($permission))
         {
             return $this->unauthorizedResponse($request);

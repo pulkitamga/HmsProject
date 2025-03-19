@@ -17,7 +17,7 @@
                 <pre>{{ dd(auth()->user()->role->permissions) }}</pre> --}}
                 {{-- <pre>{{ dd(auth()->user()->role, auth()->user()->role->permissions) }}</pre> --}}
                 
-                @if (!auth()->user()->role->permissions->isEmpty() && auth()->user()->hasPermission('add_User'))
+                @if (auth()->user()->role_id == 1 || (!auth()->user()->role->permissions->isEmpty() && auth()->user()->hasPermission('add_User')))
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#userModal">
                         <i class="fa fa-plus-circle me-2"></i> Add User
                     </button>
@@ -45,13 +45,13 @@
                                 <td>{{ $user->role->name ?? 'No Role Assigned' }}</td>
                                 <td>+917582060792</td>
                                 <td>
-                                    @if (!auth()->user()->role->permissions->isEmpty() && auth()->user()->hasPermission('edit_User'))
+                                   
                                     <button class="btn btn-primary btn-sm rounded-pill edit-user"
                                         data-id="{{ $user->id }}" data-name="{{ $user->name }}"
                                         data-email="{{ $user->email }}" data-role="{{ $user->role_id }}"
                                         data-bs-toggle="modal" data-bs-target="#editUserModal"><i
                                             class="fa fa-edit"></i></button>
-                                    @endif
+                                    
                                     <button class="btn btn-danger btn-sm delete-user" data-id={{ $user->id }}>
                                         <i class="fa fa-trash"></i>
                                     </button>
@@ -338,10 +338,10 @@
             educationContainer.innerHTML = '';
 
             const educationOptions = {
-                1: ["MBBS", "MD", "Doctorate (PhD)"],
-                2: ["Diploma", "Bachelor's Degree", "Master's Degree"],
-                4: ["Diploma", "Bachelor's Degree"],
-                5: ["High School", "Diploma", "Bachelor's Degree", "Master's Degree"]
+                4: ["MBBS", "MD", "Doctorate (PhD)"],
+                5: ["Diploma", "Bachelor's Degree", "Master's Degree"],
+                6: ["Diploma", "Bachelor's Degree"],
+                7: ["High School", "Diploma", "Bachelor's Degree", "Master's Degree"]
             };
 
             if (educationOptions[role]) {
@@ -404,14 +404,14 @@
             //console.log('Role selected:', role); 
             specializationContainer.innerHTML = '';
             const specializationOptions = {
-                1: ["Cardiologist", "Neurologist", "Orthopedic Surgeon", "Pediatrician", "Dermatologist",
+                4: ["Cardiologist", "Neurologist", "Orthopedic Surgeon", "Pediatrician", "Dermatologist",
                     "ENT Specialist", "Ophthalmologist", "General Physician", "Psychiatrist"
                 ], // Doctors
-                3: ["ICU Nurse", "Surgical Nurse", "Pediatric Nurse", "Oncology Nurse", "ER Nurse"], // Nurses
-                4: ["Lab Technician", "Radiology Technician", "Anesthesia Technician",
+                5: ["ICU Nurse", "Surgical Nurse", "Pediatric Nurse", "Oncology Nurse", "ER Nurse"], // Nurses
+                6: ["Lab Technician", "Radiology Technician", "Anesthesia Technician",
                     "Pharmacy Technician"
                 ], // Technicians
-                5: ["Physiotherapist", "Speech Therapist", "Medical Transcriptionist"] // Therapists & Admin
+                7: ["Physiotherapist", "Speech Therapist", "Medical Transcriptionist"] // Therapists & Admin
             };
 
             if (specializationOptions[role]) {

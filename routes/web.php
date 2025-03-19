@@ -1,9 +1,11 @@
 <?php
 
-use App\Http\Controllers\BillController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BillController;
+use App\Http\Controllers\TestController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\NurseController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\EmployeeController;
@@ -74,6 +76,12 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::get('/doctors/{id}', 'show')->name('doctors.show');  // Show Single Doctor
    });
 
+   Route::controller(NurseController::class)->group(function(){
+    Route::get('/nurses','index')->name('nurses.index');      // Show All Nurse
+    Route::get('/nurses/{id}', 'show')->name('nurses.show');  // Show Single Doctor
+   });
+
+    
    Route::controller(EmployeeController::class)->group(function(){
     Route::get('/employees','index')->name('employees.index');
     Route::post('/employees','store')->name('employees.store');

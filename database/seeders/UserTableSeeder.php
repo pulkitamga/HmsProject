@@ -15,10 +15,7 @@ class UserTableSeeder extends Seeder
      */
     public function run(): void
     {
-        $adminRole = Role::firstOrCreate([
-            'id' => 1,
-            'name' => 'Admin',
-        ]);
+        $adminRole = Role::where('id', 1)->first(); 
 
         if ($adminRole) {
             User::firstOrCreate([

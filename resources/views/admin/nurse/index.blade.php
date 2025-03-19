@@ -19,17 +19,17 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($doctors as $doctor)
+                        @foreach ($nurses as $nurse)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ $doctor->user->name }}</td>
-                                <td>{{ $doctor->user->email }}</td>
+                                <td>{{ $nurse->user->name }}</td>
+                                <td>{{ $nurse->user->email }}</td>
                                 <td>
                                     @if (
-                                        $doctor->userDetails &&
-                                            $doctor->userDetails->specialization &&
-                                            is_array(json_decode($doctor->userDetails->specialization)))
-                                        @foreach (json_decode($doctor->userDetails->specialization) as $specialization)
+                                        $nurse->userDetails &&
+                                            $nurse->userDetails->specialization &&
+                                            is_array(json_decode($nurse->userDetails->specialization)))
+                                        @foreach (json_decode($nurse->userDetails->specialization) as $specialization)
                                             <li>{{ $specialization }}</li>
                                         @endforeach
                                     @else
@@ -38,13 +38,13 @@
 
                                 </td>
                                 <td>
-                                    <button class="btn btn-info btn-sm viewDoctor" data-id="{{ $doctor->id }}">
+                                    <button class="btn btn-info btn-sm viewDoctor" data-id="{{ $nurse->id }}">
                                         <i class="fa fa-eye"></i>
                                     </button>
 
                                     <button class="btn btn-primary btn-sm rounded-pill edit-user"
-                                        data-id="{{ $doctor->id }}" data-name="{{ $doctor->name }}"
-                                        data-email="{{ $doctor->email }}" data-role="{{ $doctor->role_id }}"
+                                        data-id="{{ $nurse->id }}" data-name="{{ $nurse->name }}"
+                                        data-email="{{ $nurse->email }}" data-role="{{ $nurse->role_id }}"
                                         data-bs-toggle="modal" data-bs-target="#editUserModal"><i
                                             class="fa fa-edit"></i></button>
 
