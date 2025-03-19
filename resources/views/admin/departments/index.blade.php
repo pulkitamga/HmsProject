@@ -17,9 +17,6 @@
                         <th>ID</th>
                         <th>Name</th>
                         <th>Description</th>
-                        <th>Doctor</th>
-                        <th>Status</th>
-                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -28,7 +25,6 @@
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $department->name }}</td>
                             <td>{{ $department->description }}</td>
-                            <td>{{ $department->doctor->name ?? 'N/A' }}</td>
                             <td>{{ ucfirst($department->status) }}</td>
                             <td>
                                 <button class="btn btn-primary btn-sm editDepartment" data-id="{{ $department->id }}">
@@ -69,15 +65,6 @@
                         <textarea name="description" id="description" class="form-control"></textarea>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Doctor</label>
-                        <select name="doctor_id" id="doctor_id" class="form-control">
-                            <option value="">--Select Doctor--</option>
-                            @foreach($doctors as $doctor)
-                                <option value="{{ $doctor->id }}">{{ $doctor->employee->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="mb-3">
                         <label class="form-label">Status</label>
                         <select name="status" id="status" class="form-control">
                             <option value="active">Active</option>
@@ -116,12 +103,13 @@
                 data: formData,
                 success: function(response) {
                     if (response.success) {
-                        $('#messageBox').html('<div class="alert alert-success">' + response.message + '</div>');
-                        form.trigger("reset");
-                        setTimeout(function() {
+                        toastr.success(response.message);
                             $('#departmentModal').modal('hide');
-                            location.reload();
-                        }, 1000);
+                            setTimeout(()=>{
+                                location.reload();
+                            },1000);
+                    }else{
+                        toastr.error(response.error, 'Error');
                     }
                 },
                 error: function(xhr) {
@@ -147,7 +135,6 @@
                     $('#departmentId').val(department.id);
                     $('#name').val(department.name);
                     $('#description').val(department.description);
-                    $('#doctor_id').val(department.doctor_id);
                     $('#status').val(department.status);
                     $('#messageBox').html('');
                     $('#departmentModal').modal('show');

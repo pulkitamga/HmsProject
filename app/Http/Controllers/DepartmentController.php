@@ -13,9 +13,8 @@ class DepartmentController extends Controller
      */
     public function index()
     {
-        $departments = Department::with('doctor')->latest()->get();
-        $doctors = Doctor::with('employee')->get();
-        return view('admin.departments.index', compact('departments','doctors')); // ✅ Updated View Path
+        $departments = Department::get();
+        return view('admin.departments.index', compact('departments')); // ✅ Updated View Path
     }
 
     /**
@@ -26,26 +25,20 @@ class DepartmentController extends Controller
         $request->validate([
             'name' => 'required|unique:departments,name',
             'description' => 'nullable|string',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'doctor_id' => 'required|exists:doctors,id',
             'status' => 'required|in:active,inactive',
         ]);
-
-        // Photo upload
-        $photoPath = null;
-        if ($request->hasFile('photo')) {
-            $photoPath = $request->file('photo')->store('departments', 'public');
-        }
 
         Department::create([
             'name' => $request->name,
             'description' => $request->description,
-            'photo_path' => $photoPath,
-            'doctor_id' => $request->doctor_id,
             'status' => $request->status,
         ]);
 
-        return redirect()->route('departments.index')->with('success', 'Department created successfully!');
+        return response()->json([
+            'success' => true, 
+            'message' => 'Department created successfully!'
+        ], 200);
+        
     }
 
     /**
