@@ -120,6 +120,8 @@ Route::get('/patients', [PatientController::class, 'index'])->name('patients.ind
 Route::get('/patients/create', [PatientController::class, 'create'])->name('patients.create'); // Show patient form
 Route::post('/patients/store', [PatientController::class, 'store'])->name('patients.store'); // Store patient
 Route::resource('admissions', AdmissionController::class)->only(['index', 'create', 'store']);
+Route::get('/get-available-rooms/{roomType}', [AdmissionController::class, 'getAvailableRooms']);
+Route::get('/get-available-beds/{roomId}', [AdmissionController::class, 'getAvailableBeds']);
 
 });
 

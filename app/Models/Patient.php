@@ -38,4 +38,8 @@ class Patient extends Model
     // {
     //     return $this->belongsTo(Department::class);
     // }
+    public function admissions()
+    {
+        return $this->hasMany(Admission::class, 'patient_id', 'patient_id');
+    }
 }

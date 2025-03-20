@@ -13,7 +13,8 @@ class Admission extends Model
         'patient_id',
         'doctor_id',
         'department_id',
-        'room_no',
+        'room_id',
+        'bed_id',
         'admission_date',
         'discharge_date',
         'status',
@@ -35,5 +36,15 @@ class Admission extends Model
     public function department()
     {
         return $this->belongsTo(Department::class);
+    }
+
+    public function room()
+    {
+        return $this->belongsTo(Room::class, 'room_no', 'id');
+    }
+
+    public function bed()
+    {
+        return $this->belongsTo(Bed::class);
     }
 }

@@ -7,6 +7,7 @@ use App\Models\Admission;
 use App\Models\User;
 use App\Models\Department;
 use App\Models\Bed;
+use App\Models\Room;
 use Illuminate\Http\Request;
 
 class AdmissionController extends Controller
@@ -16,59 +17,79 @@ class AdmissionController extends Controller
      */
     public function index()
     {
-        $admissions = Admission::with(['patient', 'doctor', 'department', 'bed'])->get();
-        return view('admin.admissions.index', compact('admissions'));
-    }
-
-    /**
-     * Show the form for creating a new admission.
-     */
-    public function create()
-    {
         $patients = Patient::all();
-        $doctors = User::where('role', 'Doctor')->get();
-        $departments = Department::all();
-        $beds = Bed::whereNull('occupied_by')->get();
-
-        return view('admissions.create', compact('patients', 'doctors', 'departments', 'beds'));
+        $doctors = User::where('role_id', '4')->get(); // Assuming doctors have role_id 4
+        $departments = Department::get();
+        $rooms = Room::where('status', 'Available')->get(); // Fetch available rooms
+        $roomTypes = ['Private', 'Semi-Private', 'General', 'ICU']; // Define available room types
+        return view('admin.admissions.index', compact('patients', 'doctors', 'departments', 'rooms', 'roomTypes'));
     }
-
+    
     /**
-     * Store a newly created admission in storage.
+     * Store a newly created admission.
      */
     public function store(Request $request)
     {
         $request->validate([
-            'patient_id' => 'required|exists:patients,patient_id',
+            'patient_id' => 'required|exists:patients,id',
             'doctor_id' => 'required|exists:users,id',
             'department_id' => 'required|exists:departments,id',
-            'bed_id' => 'nullable|exists:beds,id',
+            'room_type' => 'required|in:Private,Semi-Private,General,ICU',
             'admission_date' => 'required|date',
             'status' => 'required|in:Admitted,Discharged',
         ]);
 
-        $admission = Admission::create($request->all());
-        
-        if ($request->bed_id) {
-            $bed = Bed::find($request->bed_id);
-            $bed->occupied_by = $admission->id;
-            $bed->save();
+        // Find an available room of the selected type
+        $room = Room::where('room_type', $request->room_type)
+            ->where('status', 'Available')
+            ->first();
+
+        if (!$room) {
+            return redirect()->back()->with('error', 'No available rooms of the selected type.');
         }
-        
+
+        // Find an available bed in the selected room
+        $bed = Bed::where('room_id', $room->id)
+            ->where('status', 'Available')
+            ->first();
+
+        if (!$bed) {
+            return redirect()->back()->with('error', 'No available beds in the selected room.');
+        }
+
+        // Create Admission with assigned room and bed
+        $admission = Admission::create([
+            'patient_id' => $request->patient_id,
+            'doctor_id' => $request->doctor_id,
+            'department_id' => $request->department_id,
+            'room_id' => $room->id,  // Store room ID
+            'bed_id' => $bed->id,    // Store assigned bed ID
+            'admission_date' => $request->admission_date,
+            'status' => $request->status,
+        ]);
+
+        // Mark Room and Bed as Occupied
+        $room->update(['status' => 'Occupied']);
+        $bed->update(['status' => 'Occupied']);
+
         return redirect()->route('admissions.index')->with('success', 'Patient admitted successfully.');
     }
 
     /**
-     * Show the form for editing an admission.
+     * Show the form for editing the admission.
      */
     public function edit(Admission $admission)
     {
         $patients = Patient::all();
-        $doctors = User::where('role', 'Doctor')->get();
+        $doctors = User::where('role_id', '4')->get();
         $departments = Department::all();
-        $beds = Bed::whereNull('occupied_by')->orWhere('id', $admission->bed_id)->get();
+        $rooms = Room::where('status', 'Available')->orWhere('id', $admission->room_no)->get();
+        $beds = Bed::where('room_id', $admission->room_no)
+            ->where('status', 'Available')
+            ->orWhere('id', $admission->bed_id)
+            ->get();
 
-        return view('admissions.edit', compact('admission', 'patients', 'doctors', 'departments', 'beds'));
+        return view('admin.admissions.edit', compact('admission', 'patients', 'doctors', 'departments', 'rooms', 'beds'));
     }
 
     /**
@@ -77,23 +98,54 @@ class AdmissionController extends Controller
     public function update(Request $request, Admission $admission)
     {
         $request->validate([
-            'patient_id' => 'required|exists:patients,patient_id',
+            'patient_id' => 'required|exists:patients,id',
             'doctor_id' => 'required|exists:users,id',
             'department_id' => 'required|exists:departments,id',
-            'bed_id' => 'nullable|exists:beds,id',
+            'room_type' => 'required|in:Private,Semi-Private,General,ICU',
             'admission_date' => 'required|date',
             'status' => 'required|in:Admitted,Discharged',
         ]);
 
-        if ($admission->bed_id && $admission->bed_id !== $request->bed_id) {
-            Bed::where('id', $admission->bed_id)->update(['occupied_by' => null]);
+        // Free the old room and bed if changed
+        if ($admission->room_no) {
+            Room::where('id', $admission->room_no)->update(['status' => 'Available']);
         }
-        
-        if ($request->bed_id) {
-            Bed::where('id', $request->bed_id)->update(['occupied_by' => $admission->id]);
+        if ($admission->bed_id) {
+            Bed::where('id', $admission->bed_id)->update(['status' => 'Available']);
         }
-        
-        $admission->update($request->all());
+
+        // Find a new available room
+        $room = Room::where('room_type', $request->room_type)
+            ->where('status', 'Available')
+            ->first();
+
+        if (!$room) {
+            return redirect()->back()->with('error', 'No available rooms of the selected type.');
+        }
+
+        // Find an available bed in the selected room
+        $bed = Bed::where('room_id', $room->id)
+            ->where('status', 'Available')
+            ->first();
+
+        if (!$bed) {
+            return redirect()->back()->with('error', 'No available beds in the selected room.');
+        }
+
+        // Update Admission
+        $admission->update([
+            'patient_id' => $request->patient_id,
+            'doctor_id' => $request->doctor_id,
+            'department_id' => $request->department_id,
+            'room_no' => $room->id,
+            'bed_id' => $bed->id,
+            'admission_date' => $request->admission_date,
+            'status' => $request->status,
+        ]);
+
+        // Mark new room and bed as occupied
+        $room->update(['status' => 'Occupied']);
+        $bed->update(['status' => 'Occupied']);
 
         return redirect()->route('admissions.index')->with('success', 'Admission updated successfully.');
     }
@@ -103,12 +155,34 @@ class AdmissionController extends Controller
      */
     public function destroy(Admission $admission)
     {
-        if ($admission->bed_id) {
-            Bed::where('id', $admission->bed_id)->update(['occupied_by' => null]);
+        // Free up the room and bed
+        if ($admission->room_no) {
+            Room::where('id', $admission->room_no)->update(['status' => 'Available']);
         }
-        
+        if ($admission->bed_id) {
+            Bed::where('id', $admission->bed_id)->update(['status' => 'Available']);
+        }
+
         $admission->delete();
 
         return redirect()->route('admissions.index')->with('success', 'Admission deleted successfully.');
     }
+
+    public function getAvailableRooms($roomType)
+    {
+        $rooms = Room::where('room_type', $roomType)
+            ->where('status', 'Available')
+            ->get(['id', 'room_number']);
+
+        return response()->json($rooms);
+    }
+    public function getAvailableBeds($roomId)
+    {
+        $beds = Bed::where('room_id', $roomId)
+            ->where('status', 'Available')
+            ->get(['id', 'bed_number']);
+
+        return response()->json($beds);
+    }
+
 }

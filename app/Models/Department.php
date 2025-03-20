@@ -19,4 +19,9 @@ class Department extends Model
     {
         return $this->belongsTo(Doctor::class);
     }
+
+    public function admissions()
+    {
+        return $this->hasMany(Admission::class, 'department_id');
+    }
 }

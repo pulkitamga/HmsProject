@@ -16,4 +16,21 @@ class Room extends Model
     {
         return $this->hasMany(Bed::class);
     }
+
+    public function admissions()
+    {
+        return $this->hasMany(Admission::class, 'room_no');
+    }
+
+    public function decreaseCapacity()
+    {
+        if ($this->capacity > 0) {
+            $this->decrement('capacity');
+        }
+    }
+
+    public function increaseCapacity()
+    {
+        $this->increment('capacity');
+    }
 }
