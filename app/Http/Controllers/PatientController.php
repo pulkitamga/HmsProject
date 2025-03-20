@@ -2,67 +2,58 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Patient;
-use App\Models\Department;
 use Illuminate\Http\Request;
+use App\Models\Patient;
 
 class PatientController extends Controller
 {
     // Show all patients
     public function index()
     {
-        $patients = Patient::with('department')->latest()->get();
-        $departments = Department::all();
-        return view('admin.patients.index', compact('patients','departments'));
+        $patients = Patient::all();
+        return view('patients.index', compact('patients'));
+    }
+
+    // Show create patient form
+    public function create()
+    {
+        return view('patients.create');
     }
 
     // Store new patient
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required',
-            'gender' => 'required',
-            'birthday' => 'required|date',
-            'department_id' => 'required',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:patients',
+            'phone' => 'required|string|max:20',
+            'dob' => 'required|date',
+            'gender' => 'required|in:Male,Female,Other',
+            'address' => 'required|string',
+            'blood_group' => 'required|string|max:5',
+            'emergency_contact' => 'required|string|max:20',
         ]);
 
-        Patient::create($request->all());
+        // Generate a unique patient ID (e.g., PAT101, PAT102...)
+        $latestPatient = Patient::latest()->first();
+        $patientNumber = $latestPatient ? ((int) substr($latestPatient->patient_id, 3) + 1) : 101;
+        $patient_id = 'PAT' . $patientNumber;
+
+        // Save the patient
+        Patient::create([
+            'patient_id' => $patient_id,
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'dob' => $request->dob,
+            'gender' => $request->gender,
+            'address' => $request->address,
+            'blood_group' => $request->blood_group,
+            'emergency_contact' => $request->emergency_contact,
+        ]);
 
         return redirect()->route('patients.index')->with('success', 'Patient added successfully.');
-    }
-
-    // Show single patient
-    public function show(Patient $patient)
-    {
-        return view('admin.patients.show', compact('patient'));
-    }
-
-    // Show edit form
-    public function edit(Patient $patient)
-    {
-        $departments = Department::all();
-        return view('admin.patients.edit', compact('patient', 'departments'));
-    }
-
-    // Update patient
-    public function update(Request $request, Patient $patient)
-    {
-        $request->validate([
-            'name' => 'required',
-            'gender' => 'required',
-            'birthday' => 'required|date',
-            'department_id' => 'required',
-        ]);
-
-        $patient->update($request->all());
-
-        return redirect()->route('patients.index')->with('success', 'Patient updated successfully.');
-    }
-
-    // Delete patient (Soft Delete)
-    public function destroy(Patient $patient)
-    {
-        $patient->delete();
-        return redirect()->route('patients.index')->with('success', 'Patient deleted successfully.');
     }
 }

@@ -10,7 +10,7 @@ class Department extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['name', 'description', 'photo_path', 'doctor_id', 'status'];
+    protected $fillable = ['name', 'description', 'status'];
 
     /**
      * Get the doctor assigned to the department.

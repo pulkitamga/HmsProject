@@ -9,7 +9,9 @@ use App\Http\Middleware\AcessMiddleware;
 use App\Http\Controllers\NurseController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\RoomBedController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\AdmissionController;
 use App\Http\Controllers\WorkLeaveController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\PermissionController;
@@ -110,7 +112,14 @@ Route::middleware('auth')->prefix('admin')->group(function () {
         Route::post('/permissions/store', 'store')->name('permissions.store');
     });
    
+    Route::get('/rooms/create', [RoomBedController::class, 'create'])->name('rooms.create');
+Route::post('/rooms/store', [RoomBedController::class, 'storeRoom'])->name('rooms.store');
+Route::post('/beds/store', [RoomBedController::class, 'storeBed'])->name('beds.store');
 
+Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');  // Show all patients
+Route::get('/patients/create', [PatientController::class, 'create'])->name('patients.create'); // Show patient form
+Route::post('/patients/store', [PatientController::class, 'store'])->name('patients.store'); // Store patient
+Route::resource('admissions', AdmissionController::class)->only(['index', 'create', 'store']);
 
 });
 

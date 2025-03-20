@@ -11,25 +11,31 @@ class Patient extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'name',
-        'gender',
-        'birthday',
-        'address',
-        'region',
+         'patient_id',
+        'first_name',
+        'last_name',
+        'email',
         'phone',
-        'nationality',
-        'bloodgroup',
-        'status',
-        'department_id',
-        'doctor',
-        'disease',
-        'admit_date',
-        'discharge_date',
-    ];
+        'dob',
+        'gender',
+        'address',
+        'blood_group',
+        'emergency_contact',
+     ];
 
-    // Relationships
-    public function department()
+     public static function boot()
     {
-        return $this->belongsTo(Department::class);
+        parent::boot();
+
+        static::creating(function ($patient) {
+            $lastPatient = self::latest()->first();
+            $number = $lastPatient ? ((int) substr($lastPatient->patient_id, 3)) + 1 : 101;
+            $patient->patient_id = 'PAT' . $number;
+        });
     }
+    // Relationships
+    // public function department()
+    // {
+    //     return $this->belongsTo(Department::class);
+    // }
 }

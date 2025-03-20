@@ -15,9 +15,10 @@ class CreateRoomsTable extends Migration
     {
         Schema::create('rooms', function (Blueprint $table) {
             $table->id(); // Auto Incrementing ID
-            $table->foreignId('department_id')->constrained('departments'); // Foreign key for departments table
-            $table->enum('status', ['available', 'occupied', 'maintenance'])->default('available'); // Room status
-            $table->enum('type', ['ward', 'private', 'semi-private', 'general'])->default('general'); // Room type
+            $table->string('room_number');
+            $table->enum('room_type',['Private', 'Semi-Private', 'General', 'ICU']);
+            $table->integer('capacity');
+            $table->enum('status',['Available', 'Full']);
             $table->timestamps(); // Created_at, Updated_at
             $table->softDeletes(); // Soft Deletes column
         });
